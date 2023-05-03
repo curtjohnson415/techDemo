@@ -1,2 +1,4 @@
 # techDemo
 tech demo materials
+# I chose the Employment Information Reports dataset provided by the Office of Federal Contract Compliance Programs as I am interested in looking at how affirmative action polices affect outcomes for workers. Using this data, I can gauge the results of companies that are required to abide by affirmative action policies, as they are bound by their contracted labor with the federal government. I will be comparing this dataset to another one which I have yet to find about outcomes for workers in private companies. I hypothesize, as a result of brief literature reviews I have conducted, that the demographic that will be shown to have benefitted the most from these policies will we white women. 
+#url = https://www.dol.gov/agencies/ofccp/foia/library/Employment-Information-Reports
