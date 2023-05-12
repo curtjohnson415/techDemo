@@ -1,0 +1,80 @@
+library(ggplot2)
+df <- read.csv('PINC-03 - Total work experience.csv')
+#colnames(df)
+#rownames(df)
+# Read in the original CSV file
+data <- read.csv("PINC-03 - Total work experience.csv", header = TRUE)
+# Remove all commas from the data
+data_cleaned <- as.data.frame(lapply(data, function(x) gsub(",", "", x)))
+# Write the cleaned data to a new CSV file
+write.csv(data_cleaned, "cleaned_PINC-03.csv", row.names = FALSE)
+df1 <- read.csv('cleaned_PINC-03.csv')
+#subsets by County
+#bk <- subset(df, "Women" >= 1 & "Hispanic" >= 1 )
+#
+bs18ar_woe <- df1$bs18ar[c(2)]
+bs18wa_woe <- df1$bs18ar[c(2)]
+bs18ba_woe <- df1$bs18ar[c(2)]
+bs18aa_woe <- df1$bs18ar[c(2)]
+bs18har_woe <- df1$bs18ar[c(2)]
+
+bs18ar_we <- df1$bs18ar[c(3)]
+bs18wa_we <- df1$bs18ar[c(3)]
+bs18ba_we <- df1$bs18ar[c(3)]
+bs18aa_we <- df1$bs18ar[c(3)]
+bs18har_we <- df1$bs18ar[c(3)]
+
+print(bs18ar_we)
+
+
+#storing income brackets from each column into vectors:
+bs18ar <- df1$bs18ar[c(4:44)]
+bs18wa <- df1$bs18wa[c(4:44)]
+bs18ba <- df1$bs18ba[c(4:44)]
+bs18aa <- df1$bs18aa[c(4:44)]
+bs18har <- df1$bs18har[c(4:44)]
+
+m18ar <- df1$m18ar[c(4:44)]
+m18wa <- df1$m18wa[c(4:44)]
+m18ba <- df1$m18ba[c(4:44)]
+m18aa <- df1$m18aa[c(4:44)]
+m18har <- df1$m18har[c(4:44)]
+
+f18ar <- df1$f18ar[c(4:44)]
+f18wa <- df1$f18wa[c(4:44)]
+f18ba <- df1$f18ba[c(4:44)]
+f18aa <- df1$f18aa[c(4:44)]
+f18har <- df1$f18har[c(4:44)]
+
+# Calculate the proportion of individuals in each race demographic that had earnings bc there were a lot more white people that responded that other races
+proportions <- c(df1$bs18wa[3], df1$bs18ba[3], df1$bs18aa[3], df1$bs18har[3]) / sum(c(df1$bs18wa[3], df1$bs18ba[3], df1$bs18aa[3], df1$bs18har[3]))
+
+df1$bs18wa[4:44] <- df1$bs18wa[4:44] * proportions[1]
+df1$bs18ba[4:44] <- df1$bs18ba[4:44] * proportions[2]
+df1$bs18aa[4:44] <- df1$bs18aa[4:44] * proportions[3]
+df1$bs18har[4:44] <- df1$bs18aa[4:44] * proportions[4]
+print(df1$bs18wa[4:44])
+print(df1$bs18ba[4:44])
+print(df1$bs18aa[4:44])
+print(df1$bs18har[4:44])
+
+
+xlim = c(1,41)
+ylim = c(1, 16000)
+
+plot(df1$bs18wa[4:44], col = "orange", xlim = xlim, ylim = ylim, pch = 16, main = "Income Brackets vs. BS18AR, BS18WA, BS18BA, BS18AA, and BS18HAR")
+points(df1$bs18wa[4:44], col = "orange", pch = 16)
+points(df1$bs18ba[4:44], col = "yellow", pch = 16)
+points(df1$bs18aa[4:44], col = "green", pch = 16)
+points(df1$bs18har[4:44], col = "blue", pch = 16)
+
+xlim = c(1, 16000)
+ylim = c(1,41)
+
+plot(1:41 ~ df1$bs18wa[4:44], col = "orange", xlim = xlim, ylim = ylim, pch = 16, main = "Income Brackets vs. BS18AR, BS18WA, BS18BA, BS18AA, and BS18HAR", xlab = "Income Brackets", ylab = "Index")
+points(1:41 ~ df1$bs18wa[4:44], col = "orange", pch = 16)
+points(1:41 ~ df1$bs18ba[4:44], col = "yellow", pch = 16)
+points(1:41 ~ df1$bs18aa[4:44], col = "green", pch = 16)
+points(1:41 ~ df1$bs18har[4:44], col = "blue", pch = 16)
+
+
