@@ -1,80 +1,157 @@
-library(ggplot2)
-df <- read.csv('PINC-03 - Total work experience.csv')
-#colnames(df)
-#rownames(df)
-# Read in the original CSV file
-data <- read.csv("PINC-03 - Total work experience.csv", header = TRUE)
+library(car)
+data <- read.csv("PINC-03 - Total work experience '21.csv", header = TRUE)
 # Remove all commas from the data
 data_cleaned <- as.data.frame(lapply(data, function(x) gsub(",", "", x)))
 # Write the cleaned data to a new CSV file
 write.csv(data_cleaned, "cleaned_PINC-03.csv", row.names = FALSE)
-df1 <- read.csv('cleaned_PINC-03.csv')
-#subsets by County
-#bk <- subset(df, "Women" >= 1 & "Hispanic" >= 1 )
-#
-bs18ar_woe <- df1$bs18ar[c(2)]
-bs18wa_woe <- df1$bs18ar[c(2)]
-bs18ba_woe <- df1$bs18ar[c(2)]
-bs18aa_woe <- df1$bs18ar[c(2)]
-bs18har_woe <- df1$bs18ar[c(2)]
+df1 <- read.csv('cleaned_PINC-03.csv', dec = ".")
 
-bs18ar_we <- df1$bs18ar[c(3)]
-bs18wa_we <- df1$bs18ar[c(3)]
-bs18ba_we <- df1$bs18ar[c(3)]
-bs18aa_we <- df1$bs18ar[c(3)]
-bs18har_we <- df1$bs18ar[c(3)]
+get_prob <- function(data, graphName) {
+  numerator <- data
+  denom <- sum(data)
+  prob <- numerator/denom
+  plot(prob, main = graphName)
+  return(prob)
+}
 
-print(bs18ar_we)
+bs18wa_prob <- get_prob(df1$bs18wa[4:44], "bs18wa")
+bs18ba_prob <- get_prob(df1$bs18ba[4:44], "bs18ba")
+bs18aa_prob <- get_prob(df1$bs18aa[4:44], "bs18aa")
+bs18har_prob <- get_prob(df1$bs18har[4:44], "bs18har")
+bs18ar_prob <- get_prob(df1$bs18ar[4:44], "bs18ar")
 
+m18wa_prob <- get_prob(df1$m18wa[4:44], "m18wa")
+m18ba_prob <- get_prob(df1$m18ba[4:44], "m18ba")
+m18aa_prob <- get_prob(df1$m18aa[4:44], "m18aa")
+m18har_prob <- get_prob(df1$m18har[4:44], "m18har")
+m18ar_prob <- get_prob(df1$m18ar[4:44], "m18ar")
 
-#storing income brackets from each column into vectors:
-bs18ar <- df1$bs18ar[c(4:44)]
-bs18wa <- df1$bs18wa[c(4:44)]
-bs18ba <- df1$bs18ba[c(4:44)]
-bs18aa <- df1$bs18aa[c(4:44)]
-bs18har <- df1$bs18har[c(4:44)]
+f18wa_prob <- get_prob(df1$f18wa[4:44], "f18wa")
+f18ba_prob <- get_prob(df1$f18ba[4:44], "f18ba")
+f18aa_prob <- get_prob(df1$f18aa[4:44], "f18aa")
+f18har_prob <- get_prob(df1$f18har[4:44], "f18har")
+f18ar_prob <- get_prob(df1$f18ar[4:44], "f18ar")
+print(bs18wa_prob)
 
-m18ar <- df1$m18ar[c(4:44)]
-m18wa <- df1$m18wa[c(4:44)]
-m18ba <- df1$m18ba[c(4:44)]
-m18aa <- df1$m18aa[c(4:44)]
-m18har <- df1$m18har[c(4:44)]
-
-f18ar <- df1$f18ar[c(4:44)]
-f18wa <- df1$f18wa[c(4:44)]
-f18ba <- df1$f18ba[c(4:44)]
-f18aa <- df1$f18aa[c(4:44)]
-f18har <- df1$f18har[c(4:44)]
-
-# Calculate the proportion of individuals in each race demographic that had earnings bc there were a lot more white people that responded that other races
-proportions <- c(df1$bs18wa[3], df1$bs18ba[3], df1$bs18aa[3], df1$bs18har[3]) / sum(c(df1$bs18wa[3], df1$bs18ba[3], df1$bs18aa[3], df1$bs18har[3]))
-
-df1$bs18wa[4:44] <- df1$bs18wa[4:44] * proportions[1]
-df1$bs18ba[4:44] <- df1$bs18ba[4:44] * proportions[2]
-df1$bs18aa[4:44] <- df1$bs18aa[4:44] * proportions[3]
-df1$bs18har[4:44] <- df1$bs18aa[4:44] * proportions[4]
-print(df1$bs18wa[4:44])
-print(df1$bs18ba[4:44])
-print(df1$bs18aa[4:44])
-print(df1$bs18har[4:44])
+# Assuming your data is stored in the vector 'data'
 
 
-xlim = c(1,41)
-ylim = c(1, 16000)
+shapiro_test <- shapiro.test(bs18wa_prob)
+p_value <- shapiro_test$p.value
 
-plot(df1$bs18wa[4:44], col = "orange", xlim = xlim, ylim = ylim, pch = 16, main = "Income Brackets vs. BS18AR, BS18WA, BS18BA, BS18AA, and BS18HAR")
-points(df1$bs18wa[4:44], col = "orange", pch = 16)
-points(df1$bs18ba[4:44], col = "yellow", pch = 16)
-points(df1$bs18aa[4:44], col = "green", pch = 16)
-points(df1$bs18har[4:44], col = "blue", pch = 16)
+if (p_value < 0.05) {
+  print("The data does not follow a normal distribution.")
+} else {
+  print("The data follows a normal distribution.")
+}
 
-xlim = c(1, 16000)
-ylim = c(1,41)
+# Assuming you have four groups: group1, group2, group3, and group4
 
-plot(1:41 ~ df1$bs18wa[4:44], col = "orange", xlim = xlim, ylim = ylim, pch = 16, main = "Income Brackets vs. BS18AR, BS18WA, BS18BA, BS18AA, and BS18HAR", xlab = "Income Brackets", ylab = "Index")
-points(1:41 ~ df1$bs18wa[4:44], col = "orange", pch = 16)
-points(1:41 ~ df1$bs18ba[4:44], col = "yellow", pch = 16)
-points(1:41 ~ df1$bs18aa[4:44], col = "green", pch = 16)
-points(1:41 ~ df1$bs18har[4:44], col = "blue", pch = 16)
+# Combine the data from all four groups into a single list or data frame
+data <- list(bs18har_prob, bs18ba_prob, bs18wa_prob, bs18aa_prob)
+
+# Bartlett's test for equal variances
+bartlett_test <- bartlett.test(data)
+
+# Extract the p-value
+p_value <- bartlett_test$p.value
+
+# Interpret the result
+if (p_value < 0.05) {
+  # Reject the null hypothesis of equal variances
+  print("The variances are significantly different.")
+} else {
+  # Fail to reject the null hypothesis of equal variances
+  print("The variances are not significantly different.")
+}
+
+groupA <- m18wa_prob
+groupB <- f18ba_prob
+groupC <- f18har_prob
+groupD <- f18ba_prob
+
+# Mann-Whitney U test between group A and group B
+AB_test <- wilcox.test(groupA, groupB)
+
+# Mann-Whitney U test between group A and group C
+AC_test <- wilcox.test(groupA, groupC)
+
+# Mann-Whitney U test between group A and group D
+AD_test <- wilcox.test(groupA, groupD)
+
+# Mann-Whitney U test between group B and group C
+BC_test <- wilcox.test(groupB, groupC)
+
+# Mann-Whitney U test between group B and group D
+BD_test <- wilcox.test(groupB, groupD)
+
+# Mann-Whitney U test between group C and group D
+CD_test <- wilcox.test(groupC, groupD)
+
+# Adjust for multiple comparisons if needed
+
+# Interpret the results for each comparison
+if (AB_test$p.value < 0.05) {
+  print("There is a significant difference between group A and group B.")
+} else {
+  print("There is no significant difference between group A and group B.")
+}
 
 
+
+# Combine the data into a single data frame
+data <- data.frame(
+  group = c(rep("A", length(groupA)), rep("B", length(groupB)), 
+            rep("C", length(groupC)), rep("D", length(groupD))),
+  value = c(groupA, groupB, groupC, groupD)
+)
+
+# Perform Kruskal-Wallis test
+kruskal_test <- kruskal.test(value ~ group, data = data)
+
+# Extract the p-value
+p_value <- kruskal_test$p.value
+
+# Interpret the result
+if (p_value < 0.05) {
+  print("There is a significant difference among the groups.")
+} else {
+  print("There is no significant difference among the groups.")
+}
+
+# Assuming the vectors are bs18wa_prob, bs18ba_prob, bs18aa_prob, and bs18har_prob
+
+# Combine the vectors into a single data frame
+data <- data.frame(
+  bs18wa_prob = bs18wa_prob,
+  bs18ba_prob = bs18ba_prob,
+  bs18aa_prob = bs18aa_prob,
+  bs18har_prob = bs18har_prob
+)
+
+# Create a scatterplot with different colors for each vector
+plot(data$bs18wa_prob, col = "red", pch = 16, xlab = "X-axis label", ylab = "Y-axis label")
+points(data$bs18ba_prob, col = "blue", pch = 16)
+points(data$bs18aa_prob, col = "green", pch = 16)
+points(data$bs18har_prob, col = "orange", pch = 16)
+
+# Add a legend to identify the colors
+legend("topright", legend = c("bs18wa_prob", "bs18ba_prob", "bs18aa_prob", "bs18har_prob"),
+       col = c("red", "blue", "green", "orange"), pch = 16)
+
+# Example data
+group1 <- bs18wa_prob
+group2 <- bs18ba_prob
+group3 <- bs18aa_prob
+
+# Combine data into a single vector
+data <- c(group1, group2)
+
+# Create a factor variable indicating groups
+groups <- factor(rep(c("Group 1", "Group 2"), each = 41))
+
+# Perform one-way ANOVA
+result <- aov(data ~ groups)
+
+# Check the ANOVA table
+summary(result)
