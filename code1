@@ -155,3 +155,57 @@ result <- aov(data ~ groups)
 
 # Check the ANOVA table
 summary(result)
+
+##probability 10k and under, 20k and under, 30k....
+##overfitting
+##correlation bewtween race and income bracket
+
+
+cumsum_bs18wa <- cumsum(df1$bs18wa[4:44])
+bs18wa_sum <- sum(df1$bs18wa[4:44])
+threshold_ranges <- c(1:5, 1:9, 1:13, 1:17, 1:21, 1:25, 1:29, 1:33, 1:37, 1:41)
+cumulative_probabilities <- cumsum_bs18wa / bs18wa_sum
+
+# Iterate through each income bracket and calculate cumulative probability
+for (i in 1:length(df1$bs18)) {
+  probability <- cumulative_probabilities[i]
+  message(paste("Probability of making up to income bracket", i, ":", probability))
+}
+
+print(bs18wa_sum)
+grouped_brackets <- matrix(cumulative_probabilities, ncol = 4, byrow = TRUE)
+
+# Calculate cumulative probability for each group of four income brackets
+group_cumulative_probabilities <- apply(grouped_brackets, 1, max)
+
+# Iterate through each group of four income brackets and calculate cumulative probability
+for (i in 1:nrow(grouped_brackets)) {
+  probability <- group_cumulative_probabilities[i]
+  message(paste("Probability of making up to income brackets", (i * 4), ":", probability))
+}
+
+# Create an empty dataframe to store the results
+result_df <- data.frame(matrix(nrow = nrow(df1), ncol = length(names(df1)[4:44])))
+
+# Iterate through each column in the dataset
+for (col_index in 1:length(names(df1)[4:44])) {
+  col <- names(df1)[4:44][col_index]
+  
+  # Calculate cumulative sum
+  cumsum_col <- cumsum(df1[[col]])
+  
+  # Calculate sum of values in the column
+  col_sum <- sum(df1[[col]])
+  
+  # Calculate cumulative probabilities
+  cumulative_probabilities <- cumsum_col / col_sum
+  
+  # Assign cumulative probabilities to the corresponding column in the result dataframe
+  result_df[, col_index] <- cumulative_probabilities
+}
+
+# Set column names of the result dataframe
+colnames(result_df) <- names(df1)[4:44]
+
+# Print the result dataframe
+print(result_df)
